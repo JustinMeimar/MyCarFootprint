@@ -19,6 +19,9 @@ import java.util.ArrayList;
 
 public class listFragment extends Fragment {
 
+    private Float totalFuelCost;
+    private Float totalFootprint;
+
     public listFragment() {
         // Required empty public constructor
     }
@@ -44,7 +47,6 @@ public class listFragment extends Fragment {
 
         MainActivity mainActivity = (MainActivity) getActivity();
         ArrayList<GasVisit> globalList = mainActivity.list;
-
         ArrayAdapter<GasVisit> listAdapter = new ArrayAdapter<>(contentView.getContext(), R.layout.list_item, globalList);
         listView.setAdapter(listAdapter);
 

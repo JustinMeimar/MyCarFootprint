@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EditFragment extends Fragment {
 
@@ -29,8 +30,6 @@ public class EditFragment extends Fragment {
 
     }
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -43,7 +42,8 @@ public class EditFragment extends Fragment {
         if (index < mainActivity.list.size()) {
             selectedVisit = mainActivity.list.get(index);
         } else {
-            selectedVisit = new GasVisit();
+            Toast.makeText(getActivity(), "This Entry No Longer Exists!", Toast.LENGTH_SHORT).show();
+            return contentView;
         }
 
         setTextToVisitFields(contentView, selectedVisit);

@@ -35,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
 
         list.add(visit1);
         list.add(visit2);
+        list.remove(1);
+        list.add(visit2);
+
 
     }
 }

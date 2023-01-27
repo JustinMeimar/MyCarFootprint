@@ -4,14 +4,20 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 public class addGasFragment extends Fragment {
 
@@ -51,10 +57,24 @@ public class addGasFragment extends Fragment {
 
     public boolean validateFormStatus() {
 
+        String gasStationName = gasVisit.getGasStationName();
+        String date = gasVisit.getDate();
+        Integer amount = gasVisit.getFuelAmount();
+        Float price = gasVisit.getFuelPrice();
+        GasVisit.FuelType type = gasVisit.getFuelType();
+
         if (gasStationValid && dateValid && fuelAmountValid && fuelPriceValid && fuelTypeValid) {
             return true;
         }
         return false;
+    }
+
+    public void setFormStatus(boolean state) {
+        gasStationValid = state;
+        dateValid = state;
+        fuelAmountValid = state;
+        fuelPriceValid = state;
+        fuelTypeValid = state;
     }
 
     @Override
@@ -87,27 +107,43 @@ public class addGasFragment extends Fragment {
             joinGasVisit = mainActivity.list.get(index);
             initializeExistingFields(joinGasVisit);
             editExisting = true;
+            setFormStatus(true);
         }
 
         gasVisit = joinGasVisit;
 
-        gasStationText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-               try {
-                   String gasStationName = gasStationText.getText().toString();
-                   gasVisit.setGasStationName(gasStationName);
-                   gasStationValid = true;
-               } catch (Exception e) {
-                   gasStationText.setError("Invalid Gas Station Name");
-                   gasStationValid = false;
-               }
+        gasStationText.addTextChangedListener(new TextWatcher() {
+
+            @Override // non optional override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { /* do nothing */ }
+
+            @Override //non optional override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    String gasStationName = gasStationText.getText().toString();
+                    gasVisit.setGasStationName(gasStationName);
+                    gasStationValid = true;
+                } catch (Exception e) {
+                    gasStationText.setError("Invalid Gas Station Name");
+                    gasStationValid = false;
+                }
             }
+
+            @Override
+            public void afterTextChanged(Editable editable) { /* do nothing */ }
         });
 
-        dateText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        dateText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onFocusChange(View view, boolean b) {
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
                 try {
                     String date = dateText.getText().toString();
                     gasVisit.setDate(date);
@@ -119,9 +155,12 @@ public class addGasFragment extends Fragment {
             }
         });
 
-        fuelAmountText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        fuelAmountText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onFocusChange(View view, boolean b) {
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { /* do nothing */ }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 try { // Fuel Amount
                     Integer fuelAmount = Integer.parseInt(fuelAmountText.getText().toString());
                     gasVisit.setFuelAmount(fuelAmount);
@@ -130,13 +169,21 @@ public class addGasFragment extends Fragment {
                     fuelAmountText.setError("Invalid Fuel Amount");
                     fuelAmountValid = false;
                 }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
                 calculateCarbonStats();
             }
         });
 
-        fuelPriceText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        fuelPriceText.addTextChangedListener(new TextWatcher() {
+
             @Override
-            public void onFocusChange(View view, boolean b) {
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { /* do nothing */ }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 try { // Fuel Unit Price
                     Float fuelUnitPrice = Float.parseFloat(fuelPriceText.getText().toString());
                     gasVisit.setFuelUnitPrice(fuelUnitPrice);
@@ -145,24 +192,31 @@ public class addGasFragment extends Fragment {
                     fuelPriceText.setError("Invalid Fuel Unit Price");
                     fuelPriceValid = false;
                 }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
                 calculateCarbonStats();
             }
         });
-
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //validate form status
+                MainActivity mainActivity = (MainActivity) getActivity();
+
                 if(!validateFormStatus()) {
                     Log.d("FAILED SUBMIT", "onClick: ");
+                    Toast.makeText(mainActivity, "Missing or Incorrect Field!", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                MainActivity mainActivity = (MainActivity) getActivity();
                 if (editExisting)  {
                     mainActivity.list.remove(index);
                     mainActivity.list.add(index, gasVisit);
+
+                    Log.d("Current List", mainActivity.list.toString());
                 } else {
                     mainActivity.list.add(gasVisit);
                 }
