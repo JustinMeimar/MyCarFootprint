@@ -17,7 +17,9 @@ public class GasVisit {
     private FuelType fuelType;
     private Integer fuelAmount;
     private Float fuelUnitPrice;
-    private Float totalPrice;
+
+    private Float totalCost;
+    private Float totalFootprint;
 
     public GasVisit() {}
 
@@ -77,12 +79,17 @@ public class GasVisit {
 
     public Float getFuelPrice() { return this.fuelUnitPrice; }
 
-    public void calculateTotalPrice() {
-        if (this.fuelAmount == null || this.fuelUnitPrice == null) {
-            return;
-        }
-        // the values have been initialized so a calculation is safe
-        this.totalPrice = this.fuelAmount * this.fuelUnitPrice;
+    public Float getTotalFootprint() {
+        return this.totalFootprint;
+    }
+    public void setTotalFootprint(Float footprint) {
+        totalFootprint = footprint;
+    }
+    public Float getTotalCost() {
+        return this.totalCost;
+    }
+    public void setTotalCost(Float cost) {
+        totalCost = cost;
     }
 
     @Override

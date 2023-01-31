@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavArgs;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,6 @@ public class EditFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View contentView = inflater.inflate(R.layout.fragment_edit, container, false);
 
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -45,6 +45,9 @@ public class EditFragment extends Fragment {
             Toast.makeText(getActivity(), "This Entry No Longer Exists!", Toast.LENGTH_SHORT).show();
             return contentView;
         }
+
+
+        Log.d("here", selectedVisit.getFuelType().name());
 
         setTextToVisitFields(contentView, selectedVisit);
 
@@ -80,6 +83,9 @@ public class EditFragment extends Fragment {
         TextView date = (TextView) contentView.findViewById(R.id.edit_view_date);
         TextView gasAmount = (TextView) contentView.findViewById(R.id.edit_view_gas_amount);
         TextView gasPrice = (TextView) contentView.findViewById(R.id.edit_view_gas_price);
+        TextView gasType = (TextView) contentView.findViewById(R.id.edit_view_gas_type_value);
+        TextView tripCost = (TextView) contentView.findViewById(R.id.edit_view_gas_total_cost_value);
+        TextView tripFootprint = (TextView) contentView.findViewById(R.id.edit_view_gas_total_footprint_value);
 
         if  (selectedVisit.getGasStationName() != null) {
             gasName.setText(selectedVisit.getGasStationName());
@@ -93,5 +99,31 @@ public class EditFragment extends Fragment {
         if (selectedVisit.getFuelPrice() != null) {
             gasPrice.setText(selectedVisit.getFuelPrice().toString());
         }
+
+        GasVisit.FuelType ft = selectedVisit.getFuelType();
+        if (ft != null) {
+            if (ft == GasVisit.FuelType.DIESEL) {
+                gasType.setText("DIESEL");
+            } else {
+                gasType.setText("REGULAR");
+            }
+        }
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        Float tc = selectedVisit.getTotalCost();
+        if (tc != null) {
+            tripCost.setText(
+                    mainActivity.roundFloatString(Float.toString(tc))
+            );
+        }
+
+        Float tf = selectedVisit.getTotalFootprint();
+        if (tf != null) {
+            tripFootprint.setText(
+                    mainActivity.roundFloatString(Float.toString(tf))
+            );
+        }
+
+
     }
 }

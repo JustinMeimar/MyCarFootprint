@@ -22,6 +22,7 @@ import org.w3c.dom.Text;
 public class addGasFragment extends Fragment {
 
     private GasVisit gasVisit;
+    private MainActivity mainActivity;
 
     private Button submitButton;
     private RadioButton regularButton;
@@ -56,12 +57,6 @@ public class addGasFragment extends Fragment {
     }
 
     public boolean validateFormStatus() {
-
-        String gasStationName = gasVisit.getGasStationName();
-        String date = gasVisit.getDate();
-        Integer amount = gasVisit.getFuelAmount();
-        Float price = gasVisit.getFuelPrice();
-        GasVisit.FuelType type = gasVisit.getFuelType();
 
         if (gasStationValid && dateValid && fuelAmountValid && fuelPriceValid && fuelTypeValid) {
             return true;
@@ -99,7 +94,7 @@ public class addGasFragment extends Fragment {
         fuelEmissionsText = rootView.findViewById(R.id.visit_form_total_footprint_value);
 
 
-        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity = (MainActivity) getActivity();
         GasVisit joinGasVisit = new GasVisit();
 
         int index = addGasFragmentArgs.fromBundle(getArguments()).getEditIndex();
@@ -211,17 +206,16 @@ public class addGasFragment extends Fragment {
                     Toast.makeText(mainActivity, "Missing or Incorrect Field!", Toast.LENGTH_LONG).show();
                     return;
                 }
-
                 if (editExisting)  {
                     mainActivity.list.remove(index);
                     mainActivity.list.add(index, gasVisit);
 
                     Log.d("Current List", mainActivity.list.toString());
                 } else {
+                    Log.d("Fuel tpye of gas visit about to be added: ", gasVisit.getFuelType().name());
                     mainActivity.list.add(gasVisit);
                 }
                 Navigation.findNavController(view).navigate(R.id.action_addGasFragment_to_successAddFragment);
-
             }
         });
 
@@ -245,7 +239,7 @@ public class addGasFragment extends Fragment {
             public void onClick(View view) {
                 boolean checked = dieselButton.isChecked();
                 if (checked) {
-                    gasVisit.setFuelType(GasVisit.FuelType.REGULAR);
+                    gasVisit.setFuelType(GasVisit.FuelType.DIESEL);
                     if (regularButton.isChecked()) {
                         regularButton.setChecked(false);
                     }
@@ -268,11 +262,15 @@ public class addGasFragment extends Fragment {
         float fuelCost = ( gasVisit.getFuelPrice() == null || gasVisit.getFuelAmount() == null) ? 0 : (gasVisit.getFuelPrice() * gasVisit.getFuelAmount());
         float fuelEmissions = ( gasVisit.getFuelType() == null || gasVisit.getFuelAmount() == null) ? 0 : gasVisit.getFuelAmount() * coefficient;
 
-        fuelCost = Math.round(fuelCost * 100) / 100;
-        fuelEmissions = Math.round(fuelEmissions * 100) / 100;
+        gasVisit.setTotalCost(fuelCost);
+        gasVisit.setTotalFootprint(fuelEmissions);
 
-        fuelCostText.setText(Float.toString(fuelCost));
-        fuelEmissionsText.setText(Float.toString(fuelEmissions));
+        fuelCostText.setText(
+                mainActivity.roundFloatString(Float.toString(fuelCost))
+        );
+        fuelEmissionsText.setText(
+                mainActivity.roundFloatString(Float.toString(fuelEmissions))
+        );
     }
 
     // Reusing interface for editing existing gas entry
