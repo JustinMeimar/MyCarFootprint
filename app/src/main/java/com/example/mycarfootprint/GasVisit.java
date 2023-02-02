@@ -26,7 +26,8 @@ public class GasVisit {
     // Name of Gas Station Get & Set
     public void setGasStationName(String gasStationName) {
         //do some syntactic assertions
-        if (gasStationName.length() == 0) {
+        int len = gasStationName.length();
+        if (len == 0 || len > 30) {
             throw new IllegalArgumentException("Illegal Argument!");
         }
         this.gasStationName = gasStationName;

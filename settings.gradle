@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "MyCarFootprint"
+rootProject.name = "meimar-MyCarFootprint"
 include ':app'
